@@ -64,7 +64,7 @@ public class CosObjectStorage implements ObjectStorage {
         config.setHttpProtocol(HttpProtocol.https);
         this.client = new COSClient(cred, config);
         // 公网上传，线程池不宜过大，避免慢网速导致超时。文档推荐同地域内网可用 16/32。
-        ExecutorService threadPool = Executors.newFixedThreadPool(8);
+        ExecutorService threadPool = Executors.newFixedThreadPool(4);
         this.transferManager = new TransferManager(client, threadPool);
         TransferManagerConfiguration tmConfig = new TransferManagerConfiguration();
         tmConfig.setMultipartUploadThreshold(5 * 1024 * 1024L);

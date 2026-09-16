@@ -45,6 +45,9 @@ BlogService/.idea/
 BlogService/uploads/**
 !BlogService/uploads/.gitkeep
 
+# Local scratch (publish scripts, drafts, temp images)
+BlogService/scratch/
+
 # Local secrets
 **/application-local.yml
 

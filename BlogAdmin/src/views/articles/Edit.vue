@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { MdEditor } from 'md-editor-v3'
+import { MdEditor, config } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import Plus from '@vicons/tabler/es/Plus'
 import Trash from '@vicons/tabler/es/Trash'
@@ -11,6 +11,12 @@ import { adminApi } from '@/api/admin'
 import { upload, deleteUpload } from '@/api/http'
 import { mediaUrl } from '@/utils/format'
 import { useThemeStore } from '@/stores/theme'
+
+config({
+  codeMirrorExtensions(extensions) {
+    return extensions.filter((item) => item.type !== 'linkShortener')
+  },
+})
 
 const route = useRoute()
 const router = useRouter()
