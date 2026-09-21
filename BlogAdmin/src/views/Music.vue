@@ -20,6 +20,7 @@ const form = reactive({
   url: '',
   cover: '',
   lrc: '',
+  status: 1,
 })
 const view = computed(() => {
   const nameKw = appliedName.value.trim().toLowerCase()
@@ -56,6 +57,7 @@ function open(row?: any) {
   form.url = row?.url || ''
   form.cover = row?.cover || ''
   form.lrc = row?.lrc || ''
+  form.status = row?.status ?? 1
   visible.value = true
 }
 
@@ -78,6 +80,7 @@ async function save() {
       url,
       cover: form.cover.trim(),
       lrc: form.lrc.trim(),
+      status: form.status,
     })
     ElMessage.success('已保存')
     visible.value = false
@@ -126,6 +129,13 @@ onMounted(load)
     <el-table-column prop="name" label="歌名" />
     <el-table-column prop="author" label="作者" />
     <el-table-column prop="url" label="地址" show-overflow-tooltip />
+    <el-table-column label="状态">
+      <template #default="{ row }">
+        <el-tag :type="row.status === 1 ? 'success' : 'info'">
+          {{ row.status === 1 ? '前台显示' : '前台不显示' }}
+        </el-tag>
+      </template>
+    </el-table-column>
     <el-table-column prop="createTime" label="创建时间" :formatter="tableTime" />
     <el-table-column label="操作">
       <template #default="{ row }">
@@ -142,6 +152,15 @@ onMounted(load)
           <el-form-item label="封面"><el-input v-model="form.cover" placeholder="封面 URL" /></el-form-item>
           <el-form-item label="歌词">
             <el-input v-model="form.lrc" type="textarea" :rows="6" placeholder="可选，LRC 格式" />
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-switch
+              v-model="form.status"
+              :active-value="1"
+              :inactive-value="0"
+              active-text="前台显示"
+              inactive-text="前台不显示"
+            />
           </el-form-item>
         </el-form>
         <template #footer><el-button type="primary" @click="save">保存</el-button></template>

@@ -18,12 +18,19 @@ public class MusicService {
         return musicMapper.selectAll();
     }
 
+    public List<Music> frontList() {
+        return musicMapper.selectVisible();
+    }
+
     public Long save(Music music) {
         music.setName(music.getName().trim());
         music.setAuthor(trimToNull(music.getAuthor()));
         music.setUrl(music.getUrl().trim());
         music.setCover(trimToNull(music.getCover()));
         music.setLrc(trimToNull(music.getLrc()));
+        if (music.getStatus() == null) {
+            music.setStatus(1);
+        }
         if (music.getId() == null) {
             music.setId(IdGenerator.nextId());
             musicMapper.insert(music);

@@ -165,7 +165,7 @@ public class FrontController {
 
     @GetMapping("/music")
     public ResponseEntity<List<Music>> music() {
-        return ResponseEntity.ok(musicService.list());
+        return ResponseEntity.ok(musicService.frontList());
     }
 
     @GetMapping("/web-update-logs")

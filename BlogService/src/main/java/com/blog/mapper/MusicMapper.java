@@ -12,6 +12,8 @@ public interface MusicMapper {
 
     Music selectById(@Param("id") Long id);
 
+    List<Music> selectVisible();
+
     int insert(Music music);
 
     int update(Music music);

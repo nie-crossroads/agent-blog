@@ -2,22 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.blog.mapper.MusicMapper">
     <select id="selectAll" resultType="com.blog.entity.Music">
-        SELECT id, name, author, url, cover, lrc, create_time, update_time
+        SELECT id, name, author, url, cover, lrc, create_time, update_time, status
         FROM blog_music
         ORDER BY id DESC
     </select>
 
     <select id="selectById" resultType="com.blog.entity.Music">
-        SELECT id, name, author, url, cover, lrc, create_time, update_time FROM blog_music WHERE id = #{id}
+        SELECT id, name, author, url, cover, lrc, create_time, update_time, status FROM blog_music WHERE id = #{id}
+    </select>
+
+    <select id="selectVisible" resultType="com.blog.entity.Music">
+        SELECT id, name, author, url, cover, lrc, create_time, update_time, status
+        FROM blog_music
+        WHERE status = 1
+        ORDER BY id DESC
     </select>
 
     <insert id="insert">
-        INSERT INTO blog_music (id, name, author, url, cover, lrc)
-        VALUES (#{id}, #{name}, #{author}, #{url}, #{cover}, #{lrc})
+        INSERT INTO blog_music (id, name, author, url, cover, lrc, status)
+        VALUES (#{id}, #{name}, #{author}, #{url}, #{cover}, #{lrc}, #{status})
     </insert>
 
     <update id="update">
-        UPDATE blog_music SET name = #{name}, author = #{author}, url = #{url}, cover = #{cover}, lrc = #{lrc}
+        UPDATE blog_music SET name = #{name}, author = #{author}, url = #{url}, cover = #{cover}, lrc = #{lrc}, status = #{status}
         WHERE id = #{id}
     </update>
 
