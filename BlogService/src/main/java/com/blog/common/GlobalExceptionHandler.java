@@ -11,6 +11,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorBody> handleUnreadable(HttpMessageNotReadableException e) {
         return of(ErrorCode.INVALID_JSON);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorBody> handleNotFound(NoResourceFoundException e) {
+        log.warn("公网自动化漏洞扫描器扫描的资源不存在", e);
+        return of(ErrorCode.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

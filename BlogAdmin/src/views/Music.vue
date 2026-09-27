@@ -132,7 +132,7 @@ onMounted(load)
     <el-table-column label="状态">
       <template #default="{ row }">
         <el-tag :type="row.status === 1 ? 'success' : 'info'">
-          {{ row.status === 1 ? '前台显示' : '前台不显示' }}
+          {{ row.status === 1 ? '显示' : '不显示' }}
         </el-tag>
       </template>
     </el-table-column>

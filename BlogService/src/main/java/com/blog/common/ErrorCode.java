@@ -61,6 +61,7 @@ public enum ErrorCode {
     EVENT_DATE_REQUIRED(HttpStatus.BAD_REQUEST, "323254", "请选择事件时间"),
     EVENT_DATE_INVALID(HttpStatus.BAD_REQUEST, "323255", "事件时间格式应为 2025-03-05"),
     FRONT_API_TOO_FREQUENT(HttpStatus.TOO_MANY_REQUESTS, "323256", "服务器繁忙，请稍后再试"),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "323257", "公网扫描资源不存在"),
 
     COS_CONFIG_INCOMPLETE(HttpStatus.INTERNAL_SERVER_ERROR, "323301", "对象存储配置不完整"),
     COS_UPLOAD_FAILED(HttpStatus.BAD_GATEWAY, "323302", "文件上传失败"),

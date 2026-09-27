@@ -77,10 +77,16 @@ public class MiscService {
         if (isGif(ext, bytes)) {
             return UploadResult.of(url, url);
         }
-        String avifName = ".avif".equals(ext) ? stem + "_t.avif" : stem + ".avif";
-        byte[] avif = avifCompressor.compressToAvif(bytes);
-        if (avif != null && avif.length > 0) {
-            thumbnailUrl = clipUrl(objectStorage.put(objectKey(avifName), avif, "image/avif"));
+        String thumbName = ".avif".equals(ext) ? stem + "_t.avif" : stem + ".avif";
+        String thumbType = "image/avif";
+        byte[] thumb = avifCompressor.compressToAvif(bytes);
+        if (thumb == null || thumb.length == 0) {
+            thumbName = ".jpg".equals(ext) ? stem + "_t.jpg" : stem + ".jpg";
+            thumbType = "image/jpeg";
+            thumb = avifCompressor.compressToJpeg(bytes);
+        }
+        if (thumb != null && thumb.length > 0) {
+            thumbnailUrl = clipUrl(objectStorage.put(objectKey(thumbName), thumb, thumbType));
         }
         return UploadResult.of(url, thumbnailUrl);
     }
