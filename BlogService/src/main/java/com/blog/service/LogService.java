@@ -5,17 +5,50 @@ import com.blog.common.PageResult;
 import com.blog.entity.BlogLog;
 import com.blog.mapper.BlogLogMapper;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class LogService {
     private static final Logger log = LoggerFactory.getLogger(LogService.class);
+    private static final ThreadLocal<Integer> BOUND_CONSUMER = new ThreadLocal<>();
 
     @Resource
     private BlogLogMapper blogLogMapper;
+
+    public static int currentConsumer() {
+        Integer bound = BOUND_CONSUMER.get();
+        if (bound != null) {
+            return bound;
+        }
+        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes) {
+            HttpServletRequest request = attributes.getRequest();
+            String uri = request.getRequestURI();
+            if (uri != null && uri.contains("/api/front")) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+    public static void runBound(int consumer, Runnable task) {
+        Integer previous = BOUND_CONSUMER.get();
+        BOUND_CONSUMER.set(consumer);
+        try {
+            task.run();
+        } finally {
+            if (previous == null) {
+                BOUND_CONSUMER.remove();
+            } else {
+                BOUND_CONSUMER.set(previous);
+            }
+        }
+    }
 
     public PageResult<BlogLog> page(PageQuery query) {
         return new PageResult<>(blogLogMapper.countPage(query), blogLogMapper.selectPage(query));
@@ -27,6 +60,7 @@ public class LogService {
         row.setStatus(status);
         row.setExeTime(0);
         row.setDetail(clip(detail));
+        row.setConsumer(currentConsumer());
         blogLogMapper.insert(row);
     }
 
@@ -78,6 +112,7 @@ public class LogService {
         String value = message.replaceAll(
                 "(?i)((?:password|passwd|secret|token|authorization|api[_-]?key)\\s*[=:]\\s*)[^\\s,;]+",
                 "$1*");
+        value = value.replaceAll("(?i)([?&]key=)[^&\\s]+", "$1*");
         return value.replaceAll("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}", "*@*");
     }
 

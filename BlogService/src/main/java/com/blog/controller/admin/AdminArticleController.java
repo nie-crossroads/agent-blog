@@ -48,6 +48,11 @@ public class AdminArticleController {
         return ResponseEntity.ok(articleService.detail(id, false));
     }
 
+    @GetMapping("/articles/{id}/simple")
+    public ResponseEntity<Article> articleSimple(@PathVariable Long id) {
+        return ResponseEntity.ok(articleService.meta(id));
+    }
+
     @PostMapping("/articles")
     public ResponseEntity<Long> createArticle(@Valid @RequestBody ArticleSaveRequest req) {
         req.setId(null);

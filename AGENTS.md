@@ -12,7 +12,7 @@
 
 ## 硬约束
 
-- 不要建表或 ALTER 现有库（`blog_email_fail` 是已按用户要求新建的表；`blog_web_update_log.event_date` 是已按用户要求新增的列，不要再改其它表）。已有 `blog_web_update_log`、`blog_music` 直接用。
+- 不要建表或 ALTER 现有库（`blog_email_fail` 是已按用户要求新建的表；`blog_web_update_log.event_date`、`blog_log.consumer` 是已按用户要求新增的列，不要再改其它表）。已有 `blog_web_update_log`、`blog_music` 直接用。
 - 只有用户明确要求时才 commit / push。
 - Controller / Service / Mapper 用 `@Resource` 字段注入，不要用构造函数。
 - 前后台图标用 `@vicons/tabler` 按文件导入，不要用 `@element-plus/icons-vue`。

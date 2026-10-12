@@ -88,6 +88,7 @@ onMounted(async () => {
     <el-table-column label="操作">
       <template #default="{ row }">
         <el-button link type="primary" @click="router.push(`/articles/edit/${row.id}`)">编辑</el-button>
+        <el-button link type="primary" @click="router.push(`/articles/edit/${row.id}?simple=1`)">简易编辑</el-button>
         <el-button link type="danger" @click="remove(row.id)">删除</el-button>
       </template>
     </el-table-column>

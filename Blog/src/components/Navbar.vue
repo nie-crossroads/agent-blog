@@ -236,7 +236,7 @@ onUnmounted(() => document.removeEventListener('pointerdown', onDocClick))
   top: calc(100% - 0.1rem);
   left: 50%;
   transform: translateX(-50%);
-  min-width: 8.8rem;
+  min-width: 7.4rem;
   padding: 0.4rem;
   flex-direction: column;
   z-index: 50;
@@ -245,7 +245,7 @@ onUnmounted(() => document.removeEventListener('pointerdown', onDocClick))
 
 .menu .item {
   width: 100%;
-  justify-content: flex-start;
+  justify-content: center;
   letter-spacing: 0.12em;
 }
 

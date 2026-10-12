@@ -43,8 +43,8 @@ public class QqInfoService {
     @Resource
     private LogService logService;
 
-    @Value("${blog.uapi.token:}")
-    private String uapiToken;
+    @Value("${blog.uapi.qq-info-key:}")
+    private String qqInfoKey;
     @Value("${blog.uapi.qq-userinfo-url:}")
     private String qqUserinfoUrl;
     @Value("${blog.uapi.qq-avatar-url:}")
@@ -65,7 +65,7 @@ public class QqInfoService {
             info.setAvatar(qqAvatarUrl.replace("{qq}", qq));
         }
         info.setEmail(qq + "@qq.com");
-        fillFromUapi(qq, info);
+        fillFromProvider(qq, info);
         return info;
     }
 
@@ -94,61 +94,61 @@ public class QqInfoService {
         lastQueryByIp.entrySet().removeIf(entry -> entry.getValue() < cutoff);
     }
 
-    private void fillFromUapi(String qq, QqInfoVO info) {
-        if (!StringUtils.hasText(uapiToken) || !StringUtils.hasText(qqUserinfoUrl)) {
-            log.warn("UAPI 未配置完整，跳过 QQ 资料查询");
+    private void fillFromProvider(String qq, QqInfoVO info) {
+        if (!StringUtils.hasText(qqInfoKey) || !StringUtils.hasText(qqUserinfoUrl)) {
+            log.warn("QQ 资料查询未配置完整，跳过");
             return;
         }
         try {
             URI uri = UriComponentsBuilder.fromUriString(qqUserinfoUrl.trim())
+                    .queryParam("key", qqInfoKey.trim())
                     .queryParam("qq", qq)
                     .encode()
                     .build()
                     .toUri();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(uapiToken);
             ResponseEntity<String> response = restTemplate.exchange(
-                    uri, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            JsonNode node = parseUser(response.getBody());
-            if (node == null) {
-                logService.recordFail("查询QQ信息", "qq=" + qq + " 响应为空");
-                return;
-            }
-            String nickname = text(node, "nickname");
-            if (StringUtils.hasText(nickname)) {
-                info.setNickname(nickname.length() > 20 ? nickname.substring(0, 20) : nickname);
-            }
-            String avatar = text(node, "avatar_url");
-            if (StringUtils.hasText(avatar)) {
-                info.setAvatar(avatar.startsWith("http://") ? "https://" + avatar.substring(7) : avatar);
-            }
-            String email = text(node, "email");
-            if (StringUtils.hasText(email)) {
-                info.setEmail(email);
-            }
+                    uri, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class);
+            applyProfile(qq, info, response.getBody());
         } catch (Exception e) {
             log.warn("查询 QQ 资料失败", e);
             logService.recordFail("查询QQ信息", "qq=" + qq, e);
         }
     }
 
-    private JsonNode parseUser(String body) {
+    private void applyProfile(String qq, QqInfoVO info, String body) {
         if (!StringUtils.hasText(body)) {
-            return null;
+            logService.recordFail("查询QQ信息", "qq=" + qq + " 响应为空");
+            return;
         }
         try {
             JsonNode root = objectMapper.readTree(body);
-            if (root.has("nickname") || root.has("avatar_url")) {
-                return root;
+            if (root.path("code").asInt(-1) != 200) {
+                String message = text(root, "msg");
+                logService.recordFail("查询QQ信息", "qq=" + qq + (message == null ? " 查询失败" : " " + message));
+                return;
             }
             JsonNode data = root.path("data");
-            if (data.isObject() && (data.has("nickname") || data.has("avatar_url"))) {
-                return data;
+            if (!data.isObject()) {
+                logService.recordFail("查询QQ信息", "qq=" + qq + " 响应为空");
+                return;
             }
-            return null;
+            String nickname = text(data, "name");
+            if (!StringUtils.hasText(nickname)) {
+                nickname = text(data.path("data"), "sNickName");
+            }
+            if (StringUtils.hasText(nickname)) {
+                info.setNickname(nickname.length() > 20 ? nickname.substring(0, 20) : nickname);
+            }
+            String avatar = text(data, "avatar");
+            if (!StringUtils.hasText(avatar)) {
+                avatar = text(data.path("data"), "sFaceUrl");
+            }
+            if (StringUtils.hasText(avatar)) {
+                info.setAvatar(avatar.startsWith("http://") ? "https://" + avatar.substring(7) : avatar);
+            }
         } catch (Exception e) {
             log.warn("解析 QQ 资料失败");
-            return null;
+            logService.recordFail("查询QQ信息", "qq=" + qq + " 响应无法解析");
         }
     }
 

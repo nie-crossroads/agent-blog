@@ -24,6 +24,7 @@ export const adminApi = {
     }>('/api/admin/dashboard'),
   articles: (params: object) => get<{ total: number; list: any[] }>('/api/admin/articles', params),
   article: (id: number | string) => get<any>(`/api/admin/articles/${id}`),
+  articleSimple: (id: number | string) => get<any>(`/api/admin/articles/${id}/simple`),
   saveArticle: (data: any) =>
     data.id ? put<number>(`/api/admin/articles/${data.id}`, data) : post<number>('/api/admin/articles', data),
   deleteArticle: (id: number) => del(`/api/admin/articles/${id}`),

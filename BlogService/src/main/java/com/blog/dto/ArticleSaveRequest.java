@@ -18,6 +18,7 @@ public class ArticleSaveRequest {
     private Integer status;
     private Integer recommend;
     private String content;
+    private boolean simple;
     private List<Long> tagIds;
     private List<String> imageUrls;
     private List<ImageSaveItem> images;

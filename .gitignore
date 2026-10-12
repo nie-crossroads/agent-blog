@@ -40,6 +40,7 @@ dist/
 .vscode/
 .cursor/
 BlogService/.idea/
+.workbuddy/
 
 # Uploads
 BlogService/uploads/**
@@ -58,3 +59,6 @@ Desktop.ini
 
 # Custom source assets (keep Java classpath resources tracked)
 /resources/
+docs/
+picture/
+deploy/

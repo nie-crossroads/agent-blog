@@ -11,5 +11,7 @@ public class BlogLog {
     private String status;
     private Integer exeTime;
     private String detail;
+    /** 调用来源：0 前台，1 后台 */
+    private Integer consumer;
     private LocalDateTime createTime;
 }

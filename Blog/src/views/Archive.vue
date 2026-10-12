@@ -53,5 +53,13 @@ h2 { font-size: calc(1rem + 2px); color: var(--btn-content); }
   padding: 0.65rem 0;
   border-bottom: 1px dashed var(--border);
   time { color: var(--c-text-2); width: 7.5rem; flex-shrink: 0; }
+  strong {
+    min-width: 0;
+    transition: transform 0.2s ease;
+  }
+}
+
+.row:hover strong {
+  transform: translateX(0.4rem);
 }
 </style>

@@ -17,6 +17,10 @@ function resetFilters() {
   logStatus.value = ''
 }
 
+function sourceText(_row: unknown, _column: unknown, value: number) {
+  return value === 0 ? '前台' : '后台'
+}
+
 onMounted(load)
 </script>
 
@@ -39,6 +43,7 @@ onMounted(load)
       </el-select>
     </template>
     <el-table-column prop="event" label="事件" />
+    <el-table-column prop="consumer" label="来源" :formatter="sourceText" />
     <el-table-column prop="status" label="状态" />
     <el-table-column prop="detail" label="详情" />
     <el-table-column prop="createTime" label="时间" :formatter="tableTime" />

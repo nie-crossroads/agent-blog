@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import User from '@vicons/tabler/es/User'
 import { BLOGGER_EMAIL } from '@/config'
@@ -23,16 +24,18 @@ withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{ submit: []; cancel: [] }>()
+const qqLoading = ref(false)
 
 async function onNicknameBlur() {
   const qq = (form.value.nickname || '').trim()
-  if (!QQ_RE.test(qq)) return
+  if (!QQ_RE.test(qq) || qqLoading.value) return
   const now = Date.now()
   if (now - lastQqQueryAt < QQ_QUERY_INTERVAL_MS) {
     ElMessage.warning('QQ 信息查询过于频繁，请稍后再试')
     return
   }
   lastQqQueryAt = now
+  qqLoading.value = true
   try {
     const info = await frontApi.qqInfo(qq)
     if (info.nickname) {
@@ -54,6 +57,8 @@ async function onNicknameBlur() {
     if (email.toLowerCase() !== BLOGGER_EMAIL.toLowerCase()) {
       form.value.email = email
     }
+  } finally {
+    qqLoading.value = false
   }
 }
 
@@ -62,6 +67,7 @@ function onAvatarError() {
 }
 
 function onSubmit() {
+  if (qqLoading.value) return
   form.value.nickname = (form.value.nickname || '').trim()
   form.value.email = (form.value.email || '').trim()
   form.value.website = (form.value.website || '').trim()
@@ -76,7 +82,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <form class="tk-box" novalidate @submit.prevent="onSubmit">
+  <form class="tk-box" :class="{ busy: qqLoading }" novalidate @submit.prevent="onSubmit">
     <textarea
       v-model="form.content"
       class="tk-textarea"
@@ -84,6 +90,7 @@ function onSubmit() {
       :maxlength="CONTENT_MAX"
       rows="5"
       required
+      :readonly="qqLoading"
     />
     <div class="tk-meta">
       <div class="tk-form-avatar" aria-hidden="true">
@@ -98,40 +105,75 @@ function onSubmit() {
       </div>
       <label>
         <span>昵称</span>
-        <input
-          v-model="form.nickname"
-          type="text"
-          placeholder="必填"
-          :maxlength="NICKNAME_MAX"
-          required
-          @blur="onNicknameBlur"
-        />
+        <el-tooltip content="输入QQ号自动获取昵称和头像" placement="bottom" trigger="focus">
+          <input
+            v-model="form.nickname"
+            type="text"
+            placeholder="必填"
+            :maxlength="NICKNAME_MAX"
+            required
+            :readonly="qqLoading"
+            @blur="onNicknameBlur"
+          />
+        </el-tooltip>
       </label>
       <label>
         <span>邮箱</span>
-        <input v-model="form.email" type="email" placeholder="必填" :maxlength="EMAIL_MAX" required />
+        <input v-model="form.email" type="email" placeholder="必填" :maxlength="EMAIL_MAX" required :readonly="qqLoading" />
       </label>
       <label>
         <span>网站</span>
-        <input v-model="form.website" type="text" placeholder="选填" />
+        <input v-model="form.website" type="text" placeholder="选填" :readonly="qqLoading" />
       </label>
     </div>
     <div class="tk-actions">
-      <button v-if="cancelable" class="tk-cancel" type="button" @click="emit('cancel')">取消</button>
+      <button v-if="cancelable" class="tk-cancel" type="button" :disabled="qqLoading" @click="emit('cancel')">取消</button>
       <label class="tk-notice">
-        <input v-model="form.notice" type="checkbox" />
+        <input v-model="form.notice" type="checkbox" :disabled="qqLoading" />
         有回复时邮件通知我
       </label>
-      <button class="tk-send" type="submit">{{ submitText }}</button>
+      <button class="tk-send" type="submit" :disabled="qqLoading">{{ submitText }}</button>
+    </div>
+    <div v-if="qqLoading" class="tk-loading" aria-live="polite">
+      <span class="tk-loading-ring" />
+      <span>获取QQ信息中</span>
     </div>
   </form>
 </template>
 
 <style scoped lang="scss">
 .tk-box {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+.tk-box.busy {
+  pointer-events: none;
+}
+.tk-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: var(--radius-large);
+  background: color-mix(in oklab, var(--card-bg) 84%, transparent);
+  color: var(--c-text-1);
+  font-size: calc(0.9rem + 2px);
+}
+.tk-loading-ring {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid var(--line-divider);
+  border-top-color: var(--btn-content);
+  border-radius: 50%;
+  animation: tk-spin 0.7s linear infinite;
+}
+@keyframes tk-spin {
+  to { transform: rotate(360deg); }
 }
 .tk-textarea {
   width: 100%;
@@ -252,7 +294,8 @@ function onSubmit() {
   .tk-meta {
     grid-template-columns: 2.5rem minmax(0, 1fr);
   }
-  .tk-meta > label:not(:first-of-type) {
+  .tk-meta > label:not(:first-of-type),
+  .tk-meta > :deep(.el-tooltip) ~ label {
     grid-column: 1 / -1;
   }
 }

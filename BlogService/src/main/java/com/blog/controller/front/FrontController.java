@@ -85,6 +85,11 @@ public class FrontController {
         return ResponseEntity.ok(article);
     }
 
+    @GetMapping("/articles/recommend")
+    public ResponseEntity<List<Article>> recommendArticles() {
+        return ResponseEntity.ok(articleService.recommend(5));
+    }
+
     @GetMapping("/articles/archive")
     public ResponseEntity<List<Article>> archive() {
         return ResponseEntity.ok(articleService.archive());

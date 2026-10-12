@@ -22,6 +22,7 @@ const route = useRoute()
 const router = useRouter()
 const theme = useThemeStore()
 const editorTheme = computed(() => (theme.dark ? 'dark' : 'light'))
+const isSimple = computed(() => route.query.simple === '1')
 const categories = ref<any[]>([])
 const tags = ref<any[]>([])
 const previewCover = ref(false)
@@ -100,7 +101,12 @@ async function save() {
   }
   const tagIds = await resolveTagIds()
   form.tagIds = tagIds
-  await adminApi.saveArticle({ ...form, tagIds, images: contentImages.value })
+  await adminApi.saveArticle({
+    ...form,
+    tagIds,
+    simple: isSimple.value,
+    images: isSimple.value ? [] : contentImages.value,
+  })
   ElMessage.success('已保存')
   router.push('/articles')
 }
@@ -110,7 +116,9 @@ onMounted(async () => {
   tags.value = await adminApi.tags()
   const id = route.params.id
   if (id) {
-    const article = await adminApi.article(String(id))
+    const article = isSimple.value
+      ? await adminApi.articleSimple(String(id))
+      : await adminApi.article(String(id))
     Object.assign(form, {
       id: article.id,
       title: article.title,
@@ -122,19 +130,21 @@ onMounted(async () => {
       comment: article.comment ?? 1,
       recommend: article.recommend ?? 0,
       status: article.status ?? 1,
-      content: article.content || '',
+      content: isSimple.value ? '' : (article.content || ''),
     })
-    contentImages.value = (article.images || []).map((item: any) => ({
-      imgUrl: item.imgUrl,
-      thumbnailUrl: item.thumbnailUrl || item.imgUrl,
-    }))
+    contentImages.value = isSimple.value
+      ? []
+      : (article.images || []).map((item: any) => ({
+          imgUrl: item.imgUrl,
+          thumbnailUrl: item.thumbnailUrl || item.imgUrl,
+        }))
   }
 })
 </script>
 
 <template>
   <el-card shadow="never">
-    <template #header>{{ form.id ? '编辑文章' : '写文章' }}</template>
+    <template #header>{{ isSimple ? '简易编辑文章' : (form.id ? '编辑文章' : '写文章') }}</template>
     <el-form label-width="90px">
       <el-form-item label="标题"><el-input v-model="form.title" /></el-form-item>
       <el-form-item label="摘要">
@@ -186,7 +196,7 @@ onMounted(async () => {
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="正文">
+      <el-form-item v-if="!isSimple" label="正文">
         <MdEditor
           :key="editorTheme"
           v-model="form.content"

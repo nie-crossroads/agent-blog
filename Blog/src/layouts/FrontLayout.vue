@@ -12,6 +12,8 @@ import bannerImg from '@/assets/banner.jpg'
 
 const route = useRoute()
 const showTop = ref(false)
+const hovering = ref(false)
+const scrollPercent = ref(0)
 const tocHeadings = ref<Heading[]>([])
 const pageRef = ref<HTMLElement | null>(null)
 const lockHeight = ref<number | null>(null)
@@ -28,6 +30,9 @@ const isArticle = computed(() => route.name === 'article')
 
 function onScroll() {
   showTop.value = window.scrollY > 400
+  const doc = document.documentElement
+  const max = doc.scrollHeight - doc.clientHeight
+  scrollPercent.value = max > 0 ? Math.round((window.scrollY / max) * 100) : 0
 }
 
 function toTop() {
@@ -143,17 +148,28 @@ onUnmounted(() => {
 
     <aside v-if="isArticle" class="toc-side">
       <ArticleToc :headings="tocHeadings" />
-      <button v-show="showTop" class="back-top beside" type="button" title="回到顶部" @click="toTop">
-        <ArrowUp />
-      </button>
     </aside>
 
-    <button v-show="showTop && !isArticle" class="back-top" type="button" title="回到顶部" @click="toTop">
-      <ArrowUp />
-    </button>
-    <button v-show="showTop && isArticle" class="back-top article-fixed" type="button" title="回到顶部" @click="toTop">
-      <ArrowUp />
-    </button>
+    <Transition name="fade">
+      <button
+        v-if="showTop"
+        class="back-top"
+        type="button"
+        title="回到顶部"
+        @click="toTop"
+        @mouseenter="hovering = true"
+        @mouseleave="hovering = false"
+      >
+        <span class="back-top-face" :class="{ up: hovering }">
+          <Transition name="face">
+            <span v-if="hovering" key="icon" class="back-top-icon">
+              <ArrowUp />
+            </span>
+            <span v-else key="percent" class="progress-num">{{ scrollPercent }}</span>
+          </Transition>
+        </span>
+      </button>
+    </Transition>
   </div>
 </template>
 
@@ -289,8 +305,9 @@ onUnmounted(() => {
   position: fixed;
   right: 1.5rem;
   bottom: 2rem;
-  width: 2.6rem;
+  min-width: 2.6rem;
   height: 2.6rem;
+  padding: 0 0.5rem;
   border: none;
   border-radius: 0.75rem;
   background: var(--float-panel-bg);
@@ -301,6 +318,8 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  transition: background 0.28s ease, color 0.28s ease;
   :deep(svg) { width: 1.2rem; height: 1.2rem; }
 }
 
@@ -309,20 +328,65 @@ onUnmounted(() => {
   color: #fff;
 }
 
-.back-top.beside {
-  position: static;
-  right: auto;
-  bottom: auto;
-  margin-top: auto;
-  align-self: flex-start;
-  z-index: 6;
+.back-top-face {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.45rem;
 }
 
-.article-fixed { display: none; }
+.back-top-icon,
+.progress-num {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-num {
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.face-enter-active,
+.face-leave-active {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+}
+
+.face-enter-from,
+.face-leave-to {
+  opacity: 0;
+}
+
+.up .face-enter-from {
+  transform: translateY(120%);
+}
+
+.up .face-leave-to {
+  transform: translateY(-120%);
+}
+
+.back-top-face:not(.up) .face-enter-from {
+  transform: translateY(-120%);
+}
+
+.back-top-face:not(.up) .face-leave-to {
+  transform: translateY(120%);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 @media (max-width: 114rem) {
   .toc-side { display: none; }
-  .article-fixed { display: inline-flex; }
 }
 
 @media (max-width: 980px) {

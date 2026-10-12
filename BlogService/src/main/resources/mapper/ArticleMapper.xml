@@ -122,6 +122,28 @@
         LIMIT #{limit}
     </select>
 
+    <select id="selectRecommend" resultType="com.blog.entity.Article">
+        SELECT a.id, a.category_id, a.title, a.description, a.cover, a.thumbnail,
+               a.comment, a.comments, a.status, a.recommend, a.pv,
+               a.create_time, a.update_time, a.year_time, a.month_time,
+               c.name AS category_name
+        FROM blog_article a
+        LEFT JOIN blog_category c ON a.category_id = c.id
+        WHERE a.status = 1 AND a.recommend = 1
+        ORDER BY a.id DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectMetaById" resultType="com.blog.entity.Article">
+        SELECT a.id, a.category_id, a.title, a.description, a.cover, a.thumbnail,
+               a.comment, a.comments, a.status, a.recommend, a.pv,
+               a.create_time, a.update_time, a.year_time, a.month_time,
+               c.name AS category_name
+        FROM blog_article a
+        LEFT JOIN blog_category c ON a.category_id = c.id
+        WHERE a.id = #{id}
+    </select>
+
     <select id="selectArchive" resultType="com.blog.entity.Article">
         SELECT a.id, a.title, a.create_time, a.year_time, a.month_time, a.pv, a.status
         FROM blog_article a

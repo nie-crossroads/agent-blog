@@ -19,6 +19,7 @@ export const frontApi = {
   articles: (params: object) => get<PageResult<Article>>('/api/front/articles', params),
   article: (id: number | string) => get<Article>(`/api/front/articles/${id}`),
   archive: () => get<Article[]>('/api/front/articles/archive'),
+  recommendArticles: () => get<Article[]>('/api/front/articles/recommend'),
   categories: () => get<Category[]>('/api/front/categories'),
   tags: () => get<Tag[]>('/api/front/tags'),
   sidebar: () => get<SidebarData>('/api/front/sidebar'),

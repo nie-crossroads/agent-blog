@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import BrandGithub from '@vicons/tabler/es/BrandGithub'
 import MusicIcon from '@vicons/tabler/es/Music'
+import Flame from '@vicons/tabler/es/Flame'
 import { frontApi } from '@/api/front'
 import { siteConfig } from '@/config'
 import { formatDate } from '@/utils/format'
@@ -10,6 +11,7 @@ import MusicPlayer from '@/components/MusicPlayer.vue'
 
 const articleTotal = ref(0)
 const lastUpdate = ref('')
+const recommendArticles = ref<any[]>([])
 
 const runDays = computed(() => {
   const start = new Date(`${siteConfig.startDate}T00:00:00`).getTime()
@@ -21,6 +23,11 @@ onMounted(async () => {
     const page = await frontApi.articles({ page: 1, size: 1 })
     articleTotal.value = page.total
     lastUpdate.value = formatDate(page.list[0]?.createTime)
+  } catch {
+    /* keep empty widgets if the API is down */
+  }
+  try {
+    recommendArticles.value = await frontApi.recommendArticles()
   } catch {
     /* keep empty widgets if the API is down */
   }
@@ -41,6 +48,16 @@ onMounted(async () => {
     <section class="card-base block music">
       <h3><MusicIcon class="tabler-icon" /> 音乐</h3>
       <MusicPlayer />
+    </section>
+
+    <section class="card-base block recommend">
+      <h3><Flame class="tabler-icon" /> 推荐文章</h3>
+      <ul v-if="recommendArticles.length" class="recommend-list">
+        <li v-for="item in recommendArticles" :key="item.id">
+          <RouterLink :to="`/article/${item.id}`" class="recommend-link">{{ item.title }}</RouterLink>
+        </li>
+      </ul>
+      <p v-else class="recommend-empty">暂无推荐</p>
     </section>
 
     <section class="card-base block">
@@ -101,5 +118,34 @@ h3 {
   padding: 0.4rem 0;
   font-size: calc(0.9rem + 2px);
   color: var(--c-text-2);
+}
+.recommend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.recommend-list li {
+  font-size: calc(0.85rem + 2px);
+  line-height: 1.45;
+}
+.recommend-link {
+  color: var(--c-text-2);
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+.recommend-link:hover {
+  color: var(--btn-content);
+}
+.recommend-empty {
+  margin: 0;
+  color: var(--c-text-3);
+  font-size: calc(0.85rem + 2px);
 }
 </style>

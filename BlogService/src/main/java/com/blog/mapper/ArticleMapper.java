@@ -38,6 +38,10 @@ public interface ArticleMapper {
 
     List<Article> selectHot(@Param("limit") int limit);
 
+    List<Article> selectRecommend(@Param("limit") int limit);
+
+    Article selectMetaById(@Param("id") Long id);
+
     List<Article> selectArchive();
 
     int recountCategory(@Param("categoryId") Long categoryId);

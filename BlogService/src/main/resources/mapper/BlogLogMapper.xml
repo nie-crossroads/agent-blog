@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.blog.mapper.BlogLogMapper">
     <select id="selectPage" resultType="com.blog.entity.BlogLog">
-        SELECT id, event, status, exe_time, detail, create_time
+        SELECT id, event, status, exe_time, detail, consumer, create_time
         FROM blog_log
         <where>
             <if test="logStatus != null and logStatus != ''">
@@ -27,7 +27,7 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO blog_log (event, status, exe_time, detail)
-        VALUES (#{event}, #{status}, #{exeTime}, #{detail})
+        INSERT INTO blog_log (event, status, exe_time, detail, consumer)
+        VALUES (#{event}, #{status}, #{exeTime}, #{detail}, #{consumer})
     </insert>
 </mapper>

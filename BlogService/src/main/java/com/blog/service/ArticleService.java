@@ -77,6 +77,9 @@ public class ArticleService {
 
     @Transactional
     public Long save(ArticleSaveRequest req) {
+        if (Boolean.TRUE.equals(req.isSimple())) {
+            return saveMeta(req);
+        }
         boolean creating = req.getId() == null;
         Long oldCategory = null;
         Article old = null;
@@ -160,6 +163,48 @@ public class ArticleService {
         return article.getId();
     }
 
+    /** 简易编辑：仅更新元数据（标题/摘要/分类/标签/封面/选项），保留正文与配图，不做图片对账。 */
+    @Transactional
+    public Long saveMeta(ArticleSaveRequest req) {
+        Long id = req.getId();
+        if (id == null) {
+            throw new BizException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
+        Article old = articleMapper.selectById(id);
+        if (old == null) {
+            throw new BizException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
+        Article article = new Article();
+        article.setId(id);
+        article.setCategoryId(req.getCategoryId());
+        article.setTitle(req.getTitle());
+        article.setDescription(resolveDescription(req.getDescription(), old.getContent()));
+        article.setCover(ImageUrls.clip(req.getCover()));
+        article.setThumbnail(ImageUrls.clip(req.getThumbnail() != null ? req.getThumbnail() : req.getCover()));
+        article.setComment(req.getComment() == null ? old.getComment() : req.getComment());
+        article.setStatus(req.getStatus() == null ? old.getStatus() : req.getStatus());
+        article.setRecommend(req.getRecommend() == null ? old.getRecommend() : req.getRecommend());
+        LocalDateTime now = LocalDateTime.now();
+        article.setYearTime(now.getYear() % 100);
+        article.setMonthTime(now.getMonthValue());
+        articleMapper.update(article);
+        articleTagMapper.deleteByArticleId(id);
+        if (req.getTagIds() != null) {
+            for (Long tagId : req.getTagIds()) {
+                ArticleTag rel = new ArticleTag();
+                rel.setArticleId(id);
+                rel.setTagId(tagId);
+                articleTagMapper.insert(rel);
+            }
+        }
+        refreshCategoryCount(req.getCategoryId());
+        if (old.getCategoryId() != null && !old.getCategoryId().equals(req.getCategoryId())) {
+            refreshCategoryCount(old.getCategoryId());
+        }
+        logService.record("保存文章(简易)", "成功", req.getTitle());
+        return id;
+    }
+
     @Transactional
     public void delete(Long id) {
         Article old = articleMapper.selectById(id);
@@ -191,6 +236,20 @@ public class ArticleService {
 
     public List<Article> hot(int limit) {
         return articleMapper.selectHot(limit);
+    }
+
+    public List<Article> recommend(int limit) {
+        return articleMapper.selectRecommend(limit);
+    }
+
+    /** 简易编辑：只返回元数据，不连表查询正文内容。 */
+    public Article meta(Long id) {
+        Article article = articleMapper.selectMetaById(id);
+        if (article == null) {
+            throw new BizException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
+        fillTags(article);
+        return article;
     }
 
     private void fillTags(Article article) {
