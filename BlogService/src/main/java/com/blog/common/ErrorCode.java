@@ -63,12 +63,10 @@ public enum ErrorCode {
     FRONT_API_TOO_FREQUENT(HttpStatus.TOO_MANY_REQUESTS, "323256", "服务器繁忙，请稍后再试"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "323257", "公网扫描资源不存在"),
 
-    COS_CONFIG_INCOMPLETE(HttpStatus.INTERNAL_SERVER_ERROR, "323301", "对象存储配置不完整"),
     COS_UPLOAD_FAILED(HttpStatus.BAD_GATEWAY, "323302", "文件上传失败"),
     COS_DELETE_FAILED(HttpStatus.BAD_GATEWAY, "323303", "文件删除失败"),
     COS_UPLOAD_INTERRUPTED(HttpStatus.INTERNAL_SERVER_ERROR, "323304", "文件上传被中断"),
 
-    QINIU_CONFIG_INCOMPLETE(HttpStatus.INTERNAL_SERVER_ERROR, "323401", "对象存储配置不完整"),
     QINIU_UPLOAD_FAILED(HttpStatus.BAD_GATEWAY, "323402", "文件上传失败"),
     QINIU_DELETE_FAILED(HttpStatus.BAD_GATEWAY, "323403", "文件删除失败");
 

@@ -43,11 +43,11 @@ public class QqInfoService {
     @Resource
     private LogService logService;
 
-    @Value("${blog.uapi.qq-info-key:}")
+    @Value("${blog.uapi.qq-info-key}")
     private String qqInfoKey;
-    @Value("${blog.uapi.qq-userinfo-url:}")
+    @Value("${blog.uapi.qq-userinfo-url}")
     private String qqUserinfoUrl;
-    @Value("${blog.uapi.qq-avatar-url:}")
+    @Value("${blog.uapi.qq-avatar-url}")
     private String qqAvatarUrl;
 
     public QqInfoVO lookup(String raw, HttpServletRequest request) {
@@ -61,9 +61,7 @@ public class QqInfoService {
         }
         QqInfoVO info = new QqInfoVO();
         info.setQq(qq);
-        if (StringUtils.hasText(qqAvatarUrl)) {
-            info.setAvatar(qqAvatarUrl.replace("{qq}", qq));
-        }
+        info.setAvatar(qqAvatarUrl.replace("{qq}", qq));
         info.setEmail(qq + "@qq.com");
         fillFromProvider(qq, info);
         return info;
@@ -95,10 +93,6 @@ public class QqInfoService {
     }
 
     private void fillFromProvider(String qq, QqInfoVO info) {
-        if (!StringUtils.hasText(qqInfoKey) || !StringUtils.hasText(qqUserinfoUrl)) {
-            log.warn("QQ 资料查询未配置完整，跳过");
-            return;
-        }
         try {
             URI uri = UriComponentsBuilder.fromUriString(qqUserinfoUrl.trim())
                     .queryParam("key", qqInfoKey.trim())

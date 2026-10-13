@@ -15,6 +15,7 @@ public class CommentSubmitRequest {
     @RequiredText(message = "请填写昵称", max = 20, tooLongMessage = "昵称不能超过20个字符")
     private String nickname;
     @RequiredText(
+            required = false,
             message = "请填写邮箱",
             max = 30,
             tooLongMessage = "邮箱不能超过30个字符",

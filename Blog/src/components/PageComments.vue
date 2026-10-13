@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import MessageCircle from '@vicons/tabler/es/MessageCircle'
 import { frontApi } from '@/api/front'
 import type { Message } from '@/api/types'
 import CommentForm from '@/components/CommentForm.vue'
 import CommentList from '@/components/CommentList.vue'
 import FramePager from '@/components/FramePager.vue'
-import { clearCommentForm, emptyCommentForm, validateCommentInput } from '@/utils/comment'
+import { clearCommentForm, copyCommentIdentity, emptyCommentForm, validateCommentInput } from '@/utils/comment'
 import { useLazyVisible } from '@/utils/lazyVisible'
 
 const PAGE_SIZE = 10
@@ -22,6 +22,15 @@ const loading = ref(false)
 const paging = ref<'prev' | 'next' | null>(null)
 const replyTo = ref<number | null>(null)
 const form = reactive(emptyCommentForm())
+const replyForm = reactive(emptyCommentForm())
+
+function startReply(id: number) {
+  if (replyTo.value == null) {
+    copyCommentIdentity(form, replyForm)
+    replyForm.content = ''
+  }
+  replyTo.value = id
+}
 
 function countVisible(items?: Message[]): number {
   return (items || []).reduce((sum, item) => {
@@ -65,24 +74,40 @@ async function go(nextPage: number, dir: 'prev' | 'next') {
 }
 
 async function submit(parentId?: number | null) {
-  const error = validateCommentInput(form)
+  const source = parentId != null ? replyForm : form
+  const error = validateCommentInput(source)
   if (error) {
     ElMessage.warning(error)
+    return
+  }
+  try {
+    await ElMessageBox.confirm('确认发送这条留言？发送后需等待博主审核。', '提示', {
+      type: 'info',
+      customClass: 'tk-send-confirm',
+      confirmButtonText: '确认发送',
+      cancelButtonText: '再想想',
+    })
+  } catch {
     return
   }
   await frontApi.submitMessage({
     pageId: props.pageId,
     parentId: parentId ?? undefined,
-    nickname: form.nickname,
-    email: form.email,
-    website: form.website,
-    avatar: form.avatar,
-    notice: form.notice ? 1 : 0,
-    content: form.content,
+    nickname: source.nickname,
+    email: source.email,
+    website: source.website,
+    avatar: source.avatar,
+    notice: source.notice ? 1 : 0,
+    content: source.content,
   })
   ElMessage.success('留言成功，请等待博主审核！')
-  clearCommentForm(form)
-  replyTo.value = null
+  if (parentId != null) {
+    copyCommentIdentity(replyForm, form)
+    clearCommentForm(replyForm)
+    replyTo.value = null
+  } else {
+    clearCommentForm(form)
+  }
   await load()
 }
 
@@ -109,15 +134,15 @@ watch(
 <template>
   <div ref="target" class="page-comments">
     <template v-if="loaded">
-      <CommentForm v-model="form" placeholder="留下足迹" @submit="submit()" />
+      <CommentForm v-model="form" placeholder="在昵称输入框中输入QQ号自动获取昵称和头像" @submit="submit()" />
       <h3 class="tk-title">
         <MessageCircle class="tabler-icon" /> 评论 {{ total }}
       </h3>
       <CommentList
         :items="list"
         :reply-to="replyTo"
-        :form="form"
-        @reply="replyTo = $event"
+        :form="replyForm"
+        @reply="startReply"
         @cancel="replyTo = null"
         @submit="submit"
       />

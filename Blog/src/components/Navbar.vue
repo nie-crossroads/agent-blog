@@ -73,31 +73,31 @@ onUnmounted(() => document.removeEventListener('pointerdown', onDocClick))
     <nav class="links">
       <RouterLink to="/" class="item" :class="{ on: active('/') }">首页</RouterLink>
 
-      <div class="drop" @mouseenter="enterMenu('article')" @mouseleave="leaveMenu">
+      <div class="drop" :class="{ open: openMenu === 'article' }" @mouseenter="enterMenu('article')" @mouseleave="leaveMenu">
         <span class="item" :class="{ on: groupOn(['/archive', '/category']) }">
           文章 <ChevronDown class="chev" />
         </span>
-        <div v-show="openMenu === 'article'" class="menu card-base">
+        <div class="menu card-base">
           <RouterLink to="/archive" class="item" :class="{ on: active('/archive') }" @click="pickMenu">归档</RouterLink>
           <RouterLink to="/category" class="item" :class="{ on: active('/category') }" @click="pickMenu">分类</RouterLink>
         </div>
       </div>
 
-      <div class="drop" @mouseenter="enterMenu('social')" @mouseleave="leaveMenu">
+      <div class="drop" :class="{ open: openMenu === 'social' }" @mouseenter="enterMenu('social')" @mouseleave="leaveMenu">
         <span class="item" :class="{ on: groupOn(['/messages', '/friends']) }">
           社交 <ChevronDown class="chev" />
         </span>
-        <div v-show="openMenu === 'social'" class="menu card-base">
+        <div class="menu card-base">
           <RouterLink to="/messages" class="item" :class="{ on: active('/messages') }" @click="pickMenu">留言板</RouterLink>
           <RouterLink to="/friends" class="item" :class="{ on: active('/friends') }" @click="pickMenu">友链</RouterLink>
         </div>
       </div>
 
-      <div class="drop" @mouseenter="enterMenu('personal')" @mouseleave="leaveMenu">
+      <div class="drop" :class="{ open: openMenu === 'personal' }" @mouseenter="enterMenu('personal')" @mouseleave="leaveMenu">
         <span class="item" :class="{ on: groupOn(['/essays', '/about']) }">
           个人 <ChevronDown class="chev" />
         </span>
-        <div v-show="openMenu === 'personal'" class="menu card-base">
+        <div class="menu card-base">
           <RouterLink to="/essays" class="item" :class="{ on: active('/essays') }" @click="pickMenu">动态</RouterLink>
           <RouterLink to="/about" class="item" :class="{ on: active('/about') }" @click="pickMenu">关于</RouterLink>
         </div>
@@ -235,12 +235,23 @@ onUnmounted(() => document.removeEventListener('pointerdown', onDocClick))
   position: absolute;
   top: calc(100% - 0.1rem);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-0.35rem);
   min-width: 7.4rem;
   padding: 0.4rem;
   flex-direction: column;
   z-index: 50;
   border: 1px solid var(--primary);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.drop.open .menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
 }
 
 .menu .item {
@@ -253,6 +264,11 @@ onUnmounted(() => document.removeEventListener('pointerdown', onDocClick))
   width: 0.9rem;
   height: 0.9rem;
   opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.drop.open .chev {
+  transform: rotate(180deg);
 }
 
 .actions {

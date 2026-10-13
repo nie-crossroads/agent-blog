@@ -21,9 +21,9 @@ import java.nio.file.Paths;
 public class LocalObjectStorage implements ObjectStorage {
     private static final Logger log = LoggerFactory.getLogger(LocalObjectStorage.class);
 
-    @Value("${blog.upload.dir:uploads}")
+    @Value("${blog.upload.dir}")
     private String uploadDir;
-    @Value("${blog.upload.url-prefix:/uploads}")
+    @Value("${blog.upload.url-prefix}")
     private String urlPrefix;
     @Resource
     private LogService logService;

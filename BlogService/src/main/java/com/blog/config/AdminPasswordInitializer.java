@@ -9,7 +9,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 
 @Configuration
 public class AdminPasswordInitializer {
@@ -19,12 +18,9 @@ public class AdminPasswordInitializer {
     public ApplicationRunner resetAdminPasswordIfNeeded(
             UserMapper userMapper,
             PasswordEncoder passwordEncoder,
-            @Value("${blog.admin.reset-password:}") String resetPassword,
-            @Value("${blog.admin.username:}") String username) {
+            @Value("${blog.admin.reset-password}") String resetPassword,
+            @Value("${blog.admin.username}") String username) {
         return args -> {
-            if (!StringUtils.hasText(resetPassword) || !StringUtils.hasText(username)) {
-                return;
-            }
             User admin = userMapper.findByUsername(username);
             String encoded = passwordEncoder.encode(resetPassword);
             if (admin == null) {

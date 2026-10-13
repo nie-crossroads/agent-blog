@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,15 @@ import java.util.List;
 public class QiniuObjectStorage implements ObjectStorage {
     private static final Logger log = LoggerFactory.getLogger(QiniuObjectStorage.class);
 
-    @Value("${blog.qiniu.access-key:}")
+    @Value("${blog.qiniu.access-key}")
     private String accessKey;
-    @Value("${blog.qiniu.secret-key:}")
+    @Value("${blog.qiniu.secret-key}")
     private String secretKey;
-    @Value("${blog.qiniu.bucket:}")
+    @Value("${blog.qiniu.bucket}")
     private String bucket;
-    @Value("${blog.qiniu.cdn-domain:}")
+    @Value("${blog.qiniu.cdn-domain}")
     private String cdnDomain;
-    @Value("${blog.qiniu.region:auto}")
+    @Value("${blog.qiniu.region}")
     private String region;
     @Resource
     private LogService logService;
@@ -48,9 +47,6 @@ public class QiniuObjectStorage implements ObjectStorage {
 
     @PostConstruct
     public void init() {
-        if (!StringUtils.hasText(accessKey) || !StringUtils.hasText(secretKey) || !StringUtils.hasText(bucket) || !StringUtils.hasText(cdnDomain)) {
-            throw new IllegalStateException(ErrorCode.QINIU_CONFIG_INCOMPLETE.getMessage());
-        }
         Configuration cfg = new Configuration(resolveRegion(region));
         this.auth = Auth.create(accessKey.trim(), secretKey.trim());
         this.uploadManager = new UploadManager(cfg);

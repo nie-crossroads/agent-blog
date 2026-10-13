@@ -225,9 +225,11 @@ onUnmounted(() => {
   top: 5.5rem;
   left: calc(50% + min(var(--page-width), calc(100% - 2rem)) / 2 + 0.75rem);
   width: 17.5rem;
-  height: calc(100vh - 6.5rem);
+  max-height: calc(100vh - 6.5rem);
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   z-index: 6;
 }
 

@@ -91,7 +91,7 @@ Vite 把 `/api`、`/uploads` 代理到 `http://127.0.0.1:8080/agent-blog/server`
 - JWT、`blog.admin.reset-password`（需要重置 admin 密码时填写后重启）
 - `spring.mail.username` / `password`（QQ 邮箱 SMTP 授权码）
 - 对象存储密钥（`blog.storage.type`：`local` / `cos` / `qiniu`）
-- `blog.map.qq-key`、`blog.uapi.token`
+- `blog.map.qq-key`、`blog.uapi.qq-info-key`
 - `blog.site.title`、`msg-avatar`、`site-url`
 
 `application.yml` 里是非密钥项（含 QQ / 地图请求 URL）。改存储类型或邮件配置后必须重启 Java。

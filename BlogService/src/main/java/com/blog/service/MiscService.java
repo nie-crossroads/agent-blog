@@ -37,11 +37,11 @@ public class MiscService {
     @Resource
     private LogService logService;
 
-    @Value("${blog.storage.prefix:agent-blog}")
+    @Value("${blog.storage.prefix}")
     private String storagePrefix;
-    @Value("${blog.upload.dir:uploads}")
+    @Value("${blog.upload.dir}")
     private String uploadDir;
-    @Value("${blog.upload.url-prefix:/uploads}")
+    @Value("${blog.upload.url-prefix}")
     private String urlPrefix;
 
     private Path uploadRoot;
@@ -170,7 +170,7 @@ public class MiscService {
     private String objectKey(String filename) {
         LocalDate now = LocalDate.now();
         int quarter = (now.getMonthValue() - 1) / 3 + 1;
-        String prefix = StringUtils.hasText(storagePrefix) ? storagePrefix.trim() : "agent-blog";
+        String prefix = storagePrefix.trim();
         while (prefix.endsWith("/")) {
             prefix = prefix.substring(0, prefix.length() - 1);
         }

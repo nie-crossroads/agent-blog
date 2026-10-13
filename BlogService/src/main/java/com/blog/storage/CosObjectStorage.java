@@ -37,15 +37,15 @@ import java.util.concurrent.Executors;
 @ConditionalOnProperty(name = "blog.storage.type", havingValue = "cos")
 public class CosObjectStorage implements ObjectStorage {
     private static final Logger log = LoggerFactory.getLogger(CosObjectStorage.class);
-    @Value("${blog.cos.secret-id:}")
+    @Value("${blog.cos.secret-id}")
     private String secretId;
-    @Value("${blog.cos.secret-key:}")
+    @Value("${blog.cos.secret-key}")
     private String secretKey;
-    @Value("${blog.cos.bucket:}")
+    @Value("${blog.cos.bucket}")
     private String bucket;
-    @Value("${blog.cos.region:}")
+    @Value("${blog.cos.region}")
     private String region;
-    @Value("${blog.cos.cdn-domain:}")
+    @Value("${blog.cos.cdn-domain}")
     private String cdnDomain;
     @Resource
     private LogService logService;
@@ -56,9 +56,6 @@ public class CosObjectStorage implements ObjectStorage {
 
     @PostConstruct
     public void init() {
-        if (!StringUtils.hasText(secretId) || !StringUtils.hasText(secretKey) || !StringUtils.hasText(bucket) || !StringUtils.hasText(region)) {
-            throw new IllegalStateException(ErrorCode.COS_CONFIG_INCOMPLETE.getMessage());
-        }
         COSCredentials cred = new BasicCOSCredentials(secretId.trim(), secretKey.trim());
         ClientConfig config = new ClientConfig(new Region(region.trim()));
         config.setHttpProtocol(HttpProtocol.https);
@@ -70,9 +67,7 @@ public class CosObjectStorage implements ObjectStorage {
         tmConfig.setMultipartUploadThreshold(5 * 1024 * 1024L);
         tmConfig.setMinimumUploadPartSize(1 * 1024 * 1024L);
         this.transferManager.setConfiguration(tmConfig);
-        this.domain = StringUtils.hasText(cdnDomain)
-                ? cdnDomain.trim()
-                : "https://" + bucket.trim() + ".cos." + region.trim() + ".myqcloud.com";
+        this.domain = cdnDomain.trim();
         log.info("腾讯 COS 已启用 bucket={} region={} domain={}", bucket, region, domain);
     }
 

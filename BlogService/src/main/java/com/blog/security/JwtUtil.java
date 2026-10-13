@@ -15,8 +15,8 @@ public class JwtUtil {
     private final SecretKey key;
     private final long expireMillis;
 
-    public JwtUtil(@Value("${blog.jwt.secret:}") String secret,
-                   @Value("${blog.jwt.expire-hours:24}") long expireHours) {
+    public JwtUtil(@Value("${blog.jwt.secret}") String secret,
+                   @Value("${blog.jwt.expire-hours}") long expireHours) {
         byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < 32) {
             byte[] padded = new byte[32];

@@ -44,13 +44,13 @@ public class MailNotificationService {
     @Resource(name = "mailExecutor")
     private ThreadPoolTaskExecutor mailExecutor;
 
-    @Value("${spring.mail.username:}")
+    @Value("${spring.mail.username}")
     private String mailUsername;
-    @Value("${spring.mail.password:}")
+    @Value("${spring.mail.password}")
     private String mailPassword;
-    @Value("${blog.mail.site-url:}")
+    @Value("${blog.site.site-url}")
     private String siteUrl;
-    @Value("${blog.site.title:}")
+    @Value("${blog.site.title}")
     private String siteTitle;
 
     public PageResult<EmailFail> failPage(PageQuery query) {
@@ -168,9 +168,6 @@ public class MailNotificationService {
     }
 
     private void deliver(MailJob job, Integer failId) throws Exception {
-        if (!StringUtils.hasText(mailUsername) || !StringUtils.hasText(mailPassword)) {
-            throw new IllegalStateException("SMTP 凭据未配置");
-        }
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, StandardCharsets.UTF_8.name());
         helper.setFrom(mailUsername, siteTitle);
@@ -276,7 +273,7 @@ public class MailNotificationService {
     }
 
     private String normalizedSiteUrl() {
-        String value = StringUtils.hasText(siteUrl) ? siteUrl.trim() : "http://127.0.0.1:5173";
+        String value = siteUrl.trim();
         while (value.endsWith("/")) {
             value = value.substring(0, value.length() - 1);
         }

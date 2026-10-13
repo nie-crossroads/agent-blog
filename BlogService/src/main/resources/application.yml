@@ -84,7 +84,6 @@ blog:
     qq-key: ${BLOG_MAP_QQ_KEY:}
     ip-url: https://apis.map.qq.com/ws/location/v1/ip
   uapi:
-    token: ${BLOG_UAPI_TOKEN:}
     qq-info-key: ${BLOG_QQ_INFO_KEY:}
     qq-userinfo-url: https://tqapi.com/api/qqinfo/info
     qq-avatar-url: https://q1.qlogo.cn/g?b=qq&nk={qq}&s=100

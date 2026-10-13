@@ -20,7 +20,7 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    @Value("${blog.upload.dir:uploads}")
+    @Value("${blog.upload.dir}")
     private String uploadDir;
 
     @Value("${blog.cors.origins}")

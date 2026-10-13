@@ -16,7 +16,7 @@ usePageReadyOnMount()
         留言建议
       </h2>
       <ul>
-        <li>对本站有任何<mark>疑问</mark>、出现<mark>bug</mark>、做的不好、有什么<mark>改进</mark>的建议，都可以在下方留言~~~</li>
+        <li>对本站有任何<mark>疑问</mark>、出现<mark>bug</mark>、做的<mark>不好</mark>、有什么<mark>改进</mark>的建议，都可以在下方留言~~~</li>
         <li>留言建议留下你的<mark>昵称</mark>与<mark>邮箱</mark>，方便及时收到博主回复</li>
         <li>请不要<mark>恶意评论</mark>，不要评论违反<mark>中国法律</mark>的内容</li>
         <li><mark>广告</mark>勿扰</li>

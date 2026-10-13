@@ -24,9 +24,9 @@ public class IpLocationService {
         }
     }
 
-    @Value("${blog.map.qq-key:}")
+    @Value("${blog.map.qq-key}")
     private String qqKey;
-    @Value("${blog.map.ip-url:}")
+    @Value("${blog.map.ip-url}")
     private String ipUrl;
 
     @Resource
@@ -40,8 +40,7 @@ public class IpLocationService {
 
     public Location lookup(String ip) {
         String queryIp = normalizeIp(ip);
-        if (!StringUtils.hasText(queryIp) || isPrivate(queryIp)
-                || !StringUtils.hasText(qqKey) || !StringUtils.hasText(ipUrl)) {
+        if (!StringUtils.hasText(queryIp) || isPrivate(queryIp)) {
             return Location.empty();
         }
         if (!dailyQuotaService.tryAcquireIp(DAILY_LIMIT)) {

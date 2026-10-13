@@ -63,17 +63,34 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .toc {
   padding: 0.9rem;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 h3 {
   margin: 0 0 0.75rem;
   font-size: calc(0.9rem + 2px);
   color: var(--c-text-1);
+  flex: none;
 }
 nav {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--btn-content) var(--btn-regular-bg);
 }
+nav::-webkit-scrollbar { width: 4px; }
+nav::-webkit-scrollbar-thumb {
+  background: var(--btn-content);
+  border-radius: 999px;
+}
+nav::-webkit-scrollbar-track { background: var(--btn-regular-bg); }
 .link {
   display: block;
   padding: 0.4rem 0.5rem;

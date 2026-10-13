@@ -16,7 +16,7 @@ blog:
   map:
     qq-key: ""
   uapi:
-    token: ""
+    qq-info-key: your-tianqi-qq-info-key
   storage:
     type: local
   cos:

@@ -37,9 +37,9 @@ public class CommentService {
     private FrontReplyLimitService frontReplyLimitService;
     @Resource
     private MailNotificationService mailNotificationService;
-    @Value("${spring.mail.username:}")
+    @Value("${spring.mail.username}")
     private String mailUsername;
-    @Value("${blog.site.title:长路漫漫}")
+    @Value("${blog.site.title}")
     private String siteTitle;
     @Value("${blog.site.msg-avatar}")
     private String msgAvatar;

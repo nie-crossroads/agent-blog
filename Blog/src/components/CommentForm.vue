@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import User from '@vicons/tabler/es/User'
 import { BLOGGER_EMAIL } from '@/config'
@@ -36,29 +36,33 @@ async function onNicknameBlur() {
   }
   lastQqQueryAt = now
   qqLoading.value = true
+  let nickname = ''
+  let avatar = ''
+  let email = ''
   try {
     const info = await frontApi.qqInfo(qq)
-    if (info.nickname) {
-      form.value.nickname = info.nickname
-    }
-    if (info.avatar) {
-      form.value.avatar = info.avatar
-    }
-    if (info.email && info.email.toLowerCase() !== BLOGGER_EMAIL.toLowerCase()) {
-      form.value.email = info.email
-    }
+    nickname = info.nickname || ''
+    avatar = info.avatar || ''
+    email = info.email || ''
   } catch (error: unknown) {
     const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
     if (message) {
       ElMessage.warning(message)
     }
-    form.value.avatar = `https://q1.qlogo.cn/g?b=qq&nk=${qq}&s=100`
-    const email = `${qq}@qq.com`
-    if (email.toLowerCase() !== BLOGGER_EMAIL.toLowerCase()) {
-      form.value.email = email
-    }
+    avatar = `https://q1.qlogo.cn/g?b=qq&nk=${qq}&s=100`
+    email = `${qq}@qq.com`
   } finally {
     qqLoading.value = false
+  }
+  await nextTick()
+  if (nickname) {
+    form.value.nickname = nickname
+  }
+  if (avatar) {
+    form.value.avatar = avatar
+  }
+  if (email && email.toLowerCase() !== BLOGGER_EMAIL.toLowerCase()) {
+    form.value.email = email
   }
 }
 
@@ -105,21 +109,19 @@ function onSubmit() {
       </div>
       <label>
         <span>昵称</span>
-        <el-tooltip content="输入QQ号自动获取昵称和头像" placement="bottom" trigger="focus">
-          <input
-            v-model="form.nickname"
-            type="text"
-            placeholder="必填"
-            :maxlength="NICKNAME_MAX"
-            required
-            :readonly="qqLoading"
-            @blur="onNicknameBlur"
-          />
-        </el-tooltip>
+        <input
+          v-model="form.nickname"
+          type="text"
+          placeholder="必填"
+          :maxlength="NICKNAME_MAX"
+          required
+          :readonly="qqLoading"
+          @blur="onNicknameBlur"
+        />
       </label>
       <label>
         <span>邮箱</span>
-        <input v-model="form.email" type="email" placeholder="必填" :maxlength="EMAIL_MAX" required :readonly="qqLoading" />
+        <input v-model="form.email" type="text" inputmode="email" autocomplete="email" placeholder="选填" :maxlength="EMAIL_MAX" :readonly="qqLoading" />
       </label>
       <label>
         <span>网站</span>
@@ -127,11 +129,11 @@ function onSubmit() {
       </label>
     </div>
     <div class="tk-actions">
-      <button v-if="cancelable" class="tk-cancel" type="button" :disabled="qqLoading" @click="emit('cancel')">取消</button>
       <label class="tk-notice">
         <input v-model="form.notice" type="checkbox" :disabled="qqLoading" />
         有回复时邮件通知我
       </label>
+      <button v-if="cancelable" class="tk-cancel" type="button" :disabled="qqLoading" @click="emit('cancel')">取消</button>
       <button class="tk-send" type="submit" :disabled="qqLoading">{{ submitText }}</button>
     </div>
     <div v-if="qqLoading" class="tk-loading" aria-live="polite">
@@ -247,7 +249,6 @@ function onSubmit() {
 }
 .tk-actions {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
 }
@@ -255,7 +256,7 @@ function onSubmit() {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  margin-right: 0.45rem;
+  margin-right: auto;
   font-size: calc(0.85rem + 2px);
   color: var(--c-text-2);
   cursor: pointer;
@@ -294,8 +295,7 @@ function onSubmit() {
   .tk-meta {
     grid-template-columns: 2.5rem minmax(0, 1fr);
   }
-  .tk-meta > label:not(:first-of-type),
-  .tk-meta > :deep(.el-tooltip) ~ label {
+  .tk-meta > label:not(:first-of-type) {
     grid-column: 1 / -1;
   }
 }
