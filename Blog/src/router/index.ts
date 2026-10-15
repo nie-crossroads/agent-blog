@@ -31,10 +31,14 @@ const router = createRouter({
   ],
 })
 
+let isFirstNavigation = true
 router.afterEach((to) => {
-  if (window._hmt) {
-    window._hmt.push(['_trackPageview', to.fullPath])
+  if (!window._hmt) return
+  if (isFirstNavigation) {
+    isFirstNavigation = false
+    return
   }
+  window._hmt.push(['_trackPageview', to.fullPath])
 })
 
 export default router
