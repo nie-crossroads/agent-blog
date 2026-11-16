@@ -87,3 +87,5 @@ blog:
     qq-info-key: ${BLOG_QQ_INFO_KEY:}
     qq-userinfo-url: https://tqapi.com/api/qqinfo/info
     qq-avatar-url: https://q1.qlogo.cn/g?b=qq&nk={qq}&s=100
+  cadenza:
+    token: ${BLOG_CADENZA_TOKEN:}

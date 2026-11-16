@@ -31,4 +31,16 @@
     <delete id="deleteById">
         DELETE FROM blog_music WHERE id = #{id}
     </delete>
+
+    <select id="countByNameAndAuthor" resultType="int">
+        SELECT COUNT(*)
+        FROM blog_music
+        WHERE name = #{name}
+        <if test="author != null">
+            AND author = #{author}
+        </if>
+        <if test="author == null">
+            AND author IS NULL
+        </if>
+    </select>
 </mapper>

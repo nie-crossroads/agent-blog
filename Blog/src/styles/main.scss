@@ -255,7 +255,10 @@ button, input, textarea { font-family: inherit; }
     color: #d4d4d4;
   }
   img {
+    display: block;
     max-width: 100%;
+    height: auto;
+    margin: 1em auto;
     border-radius: 12px;
     cursor: zoom-in;
   }

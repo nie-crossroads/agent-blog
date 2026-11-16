@@ -19,4 +19,6 @@ public interface MusicMapper {
     int update(Music music);
 
     int deleteById(@Param("id") Long id);
+
+    int countByNameAndAuthor(@Param("name") String name, @Param("author") String author);
 }

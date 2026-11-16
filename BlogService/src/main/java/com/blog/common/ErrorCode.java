@@ -62,6 +62,12 @@ public enum ErrorCode {
     EVENT_DATE_INVALID(HttpStatus.BAD_REQUEST, "323255", "事件时间格式应为 2025-03-05"),
     FRONT_API_TOO_FREQUENT(HttpStatus.TOO_MANY_REQUESTS, "323256", "服务器繁忙，请稍后再试"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "323257", "公网扫描资源不存在"),
+    CADENZA_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "323258", "音乐平台令牌无效"),
+    MUSIC_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "323259", "歌名不能超过20个字符"),
+    MUSIC_AUTHOR_TOO_LONG(HttpStatus.BAD_REQUEST, "323260", "作者不能超过20个字符"),
+    MUSIC_URL_TOO_LONG(HttpStatus.BAD_REQUEST, "323261", "播放地址不能超过80个字符"),
+    MUSIC_COVER_TOO_LONG(HttpStatus.BAD_REQUEST, "323262", "封面地址不能超过100个字符"),
+    MUSIC_EXISTS(HttpStatus.CONFLICT, "323263", "这首歌已添加"),
 
     COS_UPLOAD_FAILED(HttpStatus.BAD_GATEWAY, "323302", "文件上传失败"),
     COS_DELETE_FAILED(HttpStatus.BAD_GATEWAY, "323303", "文件删除失败"),
