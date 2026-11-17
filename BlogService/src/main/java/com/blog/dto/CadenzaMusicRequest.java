@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Data
 public class CadenzaMusicRequest {
-    @RequiredText(message = "请填写歌名", max = 20, tooLongMessage = "歌名不能超过20个字符")
+    @RequiredText(message = "请填写歌名", max = 50, tooLongMessage = "歌名不能超过20个字符")
     private String name;
 
-    @RequiredText(required = false, max = 20, tooLongMessage = "作者不能超过20个字符")
+    @RequiredText(required = false, max = 50, tooLongMessage = "作者不能超过20个字符")
     private String author;
 
-    @RequiredText(message = "请填写播放地址", max = 80, tooLongMessage = "播放地址不能超过80个字符")
+    @RequiredText(message = "请填写播放地址", max = 240, tooLongMessage = "播放地址不能超过80个字符")
     private String url;
 
     @RequiredText(required = false, max = 100, tooLongMessage = "封面地址不能超过100个字符")

@@ -87,5 +87,7 @@ blog:
     qq-info-key: ${BLOG_QQ_INFO_KEY:}
     qq-userinfo-url: https://tqapi.com/api/qqinfo/info
     qq-avatar-url: https://q1.qlogo.cn/g?b=qq&nk={qq}&s=100
+  # 音乐平台。根密钥与吊销名单放 application-local.yml 或环境变量，不要提交根密钥
   cadenza:
-    token: ${BLOG_CADENZA_TOKEN:}
+    root-key: "${BLOG_CADENZA_ROOT_KEY:}"
+    revoked: "${BLOG_CADENZA_REVOKED:}"
